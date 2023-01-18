@@ -71,14 +71,12 @@ public class SwerveModule{
     private double kMaxOutputTurn=0.8;
 
     String m_name;    
-    
-public SwerveModule(String name, int driveID, int turnID, int cancoderID, double zeropos, 
-                boolean invD, boolean invT, boolean invEncD, boolean invEncT){     
+
+public SwerveModule(String name, int driveID, int turnID, int cancoderID, double zeropos){     
 // set up the drive motor        
     m_name = name;                         
     m_drive=new TalonFX(driveID);
     m_drive.configFactoryDefault();
-    m_drive.setInverted(invD);
     m_drive.configVoltageCompSaturation(voltageComp);
     m_drive.enableVoltageCompensation(true);
     m_drive.setNeutralMode(NeutralMode.Brake);
@@ -138,7 +136,6 @@ public SwerveModule(String name, int driveID, int turnID, int cancoderID, double
     
 
     m_turn.configFactoryDefault();
-    m_turn.setInverted(invD);
     m_turn.setNeutralMode(NeutralMode.Brake);
 
     m_turn.configRemoteFeedbackFilter(e_turn, 0, 25);
@@ -318,13 +315,7 @@ public double getDriveErrorRPM() {
 
         feedforward_drive_T=new SimpleMotorFeedforward(kS_drive, kV_drive, kA_drive);
         feedforward_drive_A=new SimpleMotorFeedforward(kS_driveAuto, kV_driveAuto, kA_driveAuto);
-        feedforward_drive=feedforward_drive_T;               
-
-
-//        m_turn.config_kP(0, kP_turn)
-//        m_turn.config_kD(0,kD_turn);
-//        m_turn.config_kF(0,kF_turn);
- //       m_turn.configClosedLoopPeakOutput(0, kMaxOutputTurn);                        
+        feedforward_drive=feedforward_drive_T;                
     }
 
     public void setPIDslot(int slot){

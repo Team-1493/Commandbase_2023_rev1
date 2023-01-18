@@ -64,21 +64,21 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
 
 
   }      
-//
-// StickState Array:  vx,vy,omega 
 
-  public void setMotors(double[] stickState ) {
- 
-    double vx=-stickState[0]*maxVelocityMPS;
+
+  // convert joystick magnitudes to velocity (mps) and rotational rate (rad/sec)
+  // then call set mootors to those speeds      StickState Array:  vx,vy,omega 
+  public void setMotorsFromStick(double[] stickState ) {
+    double vx=stickState[0]*maxVelocityMPS;
     double vy=stickState[1]*maxVelocityMPS;
     double omega=stickState[2];
+    setMotors(vx,vy,omega);
+}
 
-  // Rotate the calculated angle 90 degrees CCW by supplying vy,-vx instead of vx,vy
-  // This makes 0 degrees straight up on the stick
+// set motors using specified  vx,vy, omega
+public void setMotors(double vx,double vy, double omega ) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-    vy, vx, omega,  new Rotation2d(heading));
-
-
+    vx, vy, omega,  new Rotation2d(heading));
 // Convert to speeds module states
     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates);
@@ -95,9 +95,9 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
     encPositionRad[i]=modules[i].getTurnPosition_Rad();
     // optimize module state to minimize the turn rotation needed
     moduleStatesOptimized[i]=optimize(moduleStates[i],encPositionRad[i]);
-    // calculate the drive motor's setpoint in rpm 
+    // get the drive motor's setpoint in rpm 
     double speedSet=moduleStatesOptimized[i].speedMetersPerSecond;
-    // calculate the turn motor's rotation setpoint radians
+    // get the turn motor's rotation setpoint radians
     double turnSet = moduleStatesOptimized[i].angle.getRadians();
     modules[i].setMotors(speedSet, turnSet);
     i++;  

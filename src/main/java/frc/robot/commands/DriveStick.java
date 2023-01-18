@@ -4,22 +4,20 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveDrive;
+import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/** An example command that uses an example subsystem. */
-public class Drive extends CommandBase {
+public class DriveStick extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveDrive m_SwerveDrive;
+  private final Supplier<double[]> m_stickState;
 
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public Drive(SwerveDrive sd) {
+  
+  public DriveStick(SwerveDrive sd,Supplier<double[]> stickState) {
     m_SwerveDrive = sd;
+    m_stickState=stickState;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_SwerveDrive);
   }
@@ -30,7 +28,9 @@ public class Drive extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_SwerveDrive.setMotorsFromStick(m_stickState.get());
+  }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -6,9 +6,13 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DriveStick;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Stick;
+
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -26,8 +30,10 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
   public final Stick driverJoystick =new Stick();
-  public JoystickButton btnResetGyro = driverJoystick.getButton(2);
+  Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
+  public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
+  public JoystickButton btnResetGyro = driverJoystick.getButton(2);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -35,7 +41,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_swervedriveSystem.setDefaultCommand(m_driveswerve);
+    m_swervedriveSystem.setDefaultCommand(driveCommand);
     // Configure the trigger bindings
     configureBindings();
   }
