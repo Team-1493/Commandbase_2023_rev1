@@ -1,4 +1,5 @@
 package frc.robot.subsystems;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -31,14 +32,13 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   public final Pigeon gyro = new Pigeon(20);
   public SwerveModuleState[] moduleStatesOptimized = new SwerveModuleState[4];
   public double heading=gyro.getHeadingRadians();
-  
   public SwerveModulePosition[] modulePos = new SwerveModulePosition[4];
-
   public SwerveDriveOdometry m_odometry ;
+  public PIDController rotatePID;
 
   private double[] encPositionRad = new double[4];   // encoder position of swerve motors
   private String[] moduleNames={"FR","FL","BR","BL"};
-  private double headingset=0;
+  
  
 
  // Constrcutor 
@@ -61,7 +61,7 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     m_odometry=new SwerveDriveOdometry(m_kinematics,new Rotation2d(heading),modulePos, 
         new Pose2d(0,0,new Rotation2d(0)));
 
-
+    rotatePID=new PIDController(.01, 0, 0);   // need to tune this
     SmartDashboard.putNumber("Max Vel FPS",maxVelocityFPS);
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
 
@@ -78,6 +78,12 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     setMotors(vx,vy,omega);
 }
 
+
+public void setMotors(double vx,double vy, Rotation2d angle ) {
+  rotatePID.setSetpoint(angle.getRadians()); 
+  setMotors(vx,vy,rotatePID.calculate(heading));
+}
+
 // set motors using specified  vx,vy, omega in meters/sec and radians/sec
 public void setMotors(double vx,double vy, double omega ) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -86,6 +92,8 @@ public void setMotors(double vx,double vy, double omega ) {
     SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates);
 }
+
+
 
 
 
@@ -134,7 +142,6 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
   public void resetGyro() {
     gyro.resetAngle();
     resetOdometryToZero();
-    headingset=0;
   }
 
   public void calibrateGyro() {
