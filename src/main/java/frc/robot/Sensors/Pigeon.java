@@ -12,7 +12,7 @@ public class Pigeon {
         pigeon.configFactoryDefault();      
         pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 251);
         pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 251);
-
+        resetAngle();
 
     }
 

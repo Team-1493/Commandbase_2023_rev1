@@ -37,11 +37,12 @@ public class SwerveModule{
     private  double  wheelDiamInches = 4.084;
     private double wheelCircumferenceMaters=wheelDiamInches*Math.PI*0.0254; // 0.32588 
     private double gearRatioDrive=8.1428; 
-    private double MPSToRPM = 60.0*gearRatioDrive/wheelCircumferenceMaters;  // 1499  (3mps = 4695 rpm)
-    private double MPSToNativeSpeed = MPSToRPM*2048.0/600.0;  // convert m/sec to Talon speed unit (counts/100ms)
-    //scales the stick -1 to 1 input to meters/sec
+    // 1499  (3mps = 4695 rpm)
+    private double MPSToRPM = 60.0*gearRatioDrive/wheelCircumferenceMaters;  
+    // convert velocity in meters/sec to Talon speed unit (encoder counts/100ms)
+    private double MPSToNativeSpeed = MPSToRPM*2048.0/600.0;  
+    // convert radians to encoder counts - 4096 counts per rotation
     private double RadiansToNativePos=4096.0/(2*Math.PI);
-
 
 
     // Drive Motor Constants
@@ -117,13 +118,12 @@ public SwerveModule(String name, int driveID, int turnID, int cancoderID, double
     // set up the turn motor    
     m_turn=new TalonFX(turnID);
     
+    //  reduce the rate of status update to reduce CAN trffic
     m_turn.setStatusFramePeriod(21, 20);
     m_turn.setStatusFramePeriod(8,249);
-
     m_turn.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat,251);
     m_turn.setStatusFramePeriod(StatusFrame.Status_12_Feedback1,251);
     m_turn.setStatusFramePeriod(StatusFrame.Status_7_CommStatus,251);
-
     m_turn.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 249);
     m_turn.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 249);
     m_turn.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 249);
@@ -183,24 +183,28 @@ public SwerveModule(String name, int driveID, int turnID, int cancoderID, double
 
 
 // get the module state for odometry calculations: velocity in mps and module angle in radians
-public SwerveModuleState getState() {
-    return new SwerveModuleState(
-        velNativeToRPM_talon(m_drive.getSelectedSensorVelocity())/MPSToRPM, 
-        new Rotation2d(getTurnPosition_Rad()));
-  }
+// *** need to clean up the conversion - go directly from native units to mps 
+    public SwerveModuleState getState() {
+        return new SwerveModuleState(
+            velNativeToRPM_talon(m_drive.getSelectedSensorVelocity())/MPSToRPM, 
+            new Rotation2d(getTurnPosition_Rad()));
+    }
 
 
-public void setMotors(double speed,double turnAngle) {
-    double acc = (speed-speedPrev)/0.020;
-    speedPrev=speed;
 
-    m_drive.set(ControlMode.Velocity,  speed*MPSToNativeSpeed,
-         DemandType.ArbitraryFeedForward, feedforward_drive.calculate(speed,acc));
-    
+// Set the drive motor, takes speed in MPS, converts to native units - encoder counts per 100ms
+// Set the turn motor, takes angle in radian, converts to native unit - encoder counts 
+    public void setMotors(double speed,double turnAngle) {
+        double acc = (speed-speedPrev)/0.020;
+        speedPrev=speed;
+
+        m_drive.set(ControlMode.Velocity,  speed*MPSToNativeSpeed,
+            DemandType.ArbitraryFeedForward, feedforward_drive.calculate(speed,acc));
     m_turn.set(ControlMode.Position,turnAngle*RadiansToNativePos);
-}
+    }
 
 
+// set all motors to zero 
 public void setMotorsAllStop() {
     m_drive.set(ControlMode.PercentOutput,0);
     m_turn.set(ControlMode.PercentOutput,0);
@@ -209,22 +213,21 @@ public void setMotorsAllStop() {
 
   public void resetEncoders() {
       m_drive.setSelectedSensorPosition(0);
-     }
+    }
 
 // get the turn encoder position, measured in rotations
-     public double getTurnPosition_Rot() {
-
+    public double getTurnPosition_Rot() {
         return ( e_turn.getPosition()/360);
-       }
+    }
 
 // get the turn encoder position, measured in rotations
-public double getTurnPosition_Deg() {
-    return (e_turn.getPosition());
+    public double getTurnPosition_Deg() {
+        return (e_turn.getPosition());
    }       
 
    // get the turn encoder position, measured in radians
-public double getTurnPosition_Rad() { 
-    return (e_turn.getPosition()*piOver180 );
+    public double getTurnPosition_Rad() { 
+        return (e_turn.getPosition()*piOver180 );
    }       
    
        // get the turn encoder absolute position, measured in degrees
@@ -233,18 +236,18 @@ public double getTurnPosition_Rad() {
        }
 
 // get the turn velocity velocity, measured in rpm
-public double getTurnVelocity() {
-    return (m_turn.getSelectedSensorVelocity()*600/4096);
+    public double getTurnVelocity() {
+        return (m_turn.getSelectedSensorVelocity()*600/4096);
    }       
 
 // get the turn output, measured in rotations
-public double getTurnMotorCLT() {
-    return m_turn.getClosedLoopTarget();
+    public double getTurnMotorCLT() {
+        return m_turn.getClosedLoopTarget();
    }       
 
    // get the turn output, measured in rotations
-public double getTurnMotorCLE() {
-    return m_turn.getClosedLoopError();
+    public double getTurnMotorCLE() {
+        return m_turn.getClosedLoopError();
    }       
 
 
@@ -264,8 +267,8 @@ public double getTurnMotorCLE() {
     }
     
 // get the drive encoder velocity, measured in rpm
-public double getDriveErrorRPM() {
-    return  velNativeToRPM_talon(m_drive.getClosedLoopError());
+    public double getDriveErrorRPM() {
+        return  velNativeToRPM_talon(m_drive.getClosedLoopError());
    }
 
   
@@ -287,7 +290,6 @@ public double getDriveErrorRPM() {
         kV_drive= SmartDashboard.getNumber("kV_Drive",kV_drive);
         kA_drive= SmartDashboard.getNumber("kA_Drive",kA_drive);
 
-
         kP_driveAuto= SmartDashboard.getNumber("kP_DriveAuto",kP_driveAuto);
         kF_driveAuto= SmartDashboard.getNumber("kF_DriveAuto",kF_driveAuto);
         kD_driveAuto= SmartDashboard.getNumber("kD_DriveAuto",kD_driveAuto);
@@ -295,23 +297,19 @@ public double getDriveErrorRPM() {
         kV_driveAuto= SmartDashboard.getNumber("kV_DriveAuto",kV_driveAuto);
         kA_driveAuto= SmartDashboard.getNumber("kA_DriveAuto",kA_driveAuto);
 
-        
+        kP_turn= SmartDashboard.getNumber("kP_Turn",kP_turn);
+        kD_turn= SmartDashboard.getNumber("kD_Turn",kD_turn);
+        kMaxOutputTurn=SmartDashboard.getNumber("MaxOutput Turn",kMaxOutputTurn);
 
-//        kP_turn= SmartDashboard.getNumber("kP_Turn",kP_turn);
-//        kD_turn= SmartDashboard.getNumber("kD_Turn",kD_turn);
-//        kF_turn= SmartDashboard.getNumber("kF_Turn",kF_turn);
-//        kMaxOutputTurn=SmartDashboard.getNumber("MaxOutput Turn",kMaxOutputTurn);
-
- //       SMMaxVelRadPerSec_turn= SmartDashboard.getNumber("SMMaxVelRadPerSec_turn",SMMaxVelRadPerSec_turn);
- //       SMMaxAccRadPerSec2_turn= SmartDashboard.getNumber("SMMaxAccRadPerSec2_turn",SMMaxAccRadPerSec2_turn);
- //       SMMaxVel_turn= 0.1*4096*SMMaxVelRadPerSec_turn/(2*Math.PI);
- //       SMMaxAcc_turn=0.1*4096*SMMaxAccRadPerSec2_turn/(2*Math.PI);
         m_drive.config_kF(0,kF_drive);
         m_drive.config_kP(0,kP_drive);
         m_drive.config_kD(0,kD_drive);
         m_drive.config_kF(1,kF_driveAuto);
         m_drive.config_kP(1,kP_driveAuto);
         m_drive.config_kD(1,kD_driveAuto);
+
+        m_turn.config_kP(0,kP_turn);
+        m_turn.config_kD(0,kD_turn);
 
         feedforward_drive_T=new SimpleMotorFeedforward(kS_drive, kV_drive, kA_drive);
         feedforward_drive_A=new SimpleMotorFeedforward(kS_driveAuto, kV_driveAuto, kA_driveAuto);

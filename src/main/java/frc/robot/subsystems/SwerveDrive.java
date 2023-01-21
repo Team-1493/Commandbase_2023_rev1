@@ -9,15 +9,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Sensors.Pigeon;
 
 public class SwerveDrive  extends SubsystemBase {
 
-  private SwerveModule[] modules;
+    public SwerveModule[] modules = new SwerveModule[4];
     // Robot Dimensions for MK4 Swerve
-    private  double  maxVelocityFPS = 11.48;  //max speed in feet/sec
-    private double maxVelocityMPS = 0.3048*maxVelocityFPS; // 3.5     
+    public  double  maxVelocityFPS = 11.48;  //max speed in feet/sec
+    public double maxVelocityMPS = 0.3048*maxVelocityFPS; // 3.5     
 
       
 public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -26,16 +28,13 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   new Translation2d(-0.257, -0.257), 
   new Translation2d(-0.257, +0.257));
 
-  private final Pigeon gyro = new Pigeon(20);
+  public final Pigeon gyro = new Pigeon(20);
   public SwerveModuleState[] moduleStatesOptimized = new SwerveModuleState[4];
   public double heading=gyro.getHeadingRadians();
   
-  public SwerveModulePosition[] modulePos = getModulePositions();
+  public SwerveModulePosition[] modulePos = new SwerveModulePosition[4];
 
-
-  public SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(m_kinematics,new Rotation2d(heading),modulePos, 
-              new Pose2d(0,0,new Rotation2d(0)));
+  public SwerveDriveOdometry m_odometry ;
 
   private double[] encPositionRad = new double[4];   // encoder position of swerve motors
   private String[] moduleNames={"FR","FL","BR","BL"};
@@ -58,6 +57,10 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     modules[3]=new SwerveModule("BL",7,8,17,
         turnMotorZeroPos[3]);
 
+    modulePos=getModulePositions();    
+    m_odometry=new SwerveDriveOdometry(m_kinematics,new Rotation2d(heading),modulePos, 
+        new Pose2d(0,0,new Rotation2d(0)));
+
 
     SmartDashboard.putNumber("Max Vel FPS",maxVelocityFPS);
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
@@ -70,12 +73,12 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   // then call set mootors to those speeds      StickState Array:  vx,vy,omega 
   public void setMotorsFromStick(double[] stickState ) {
     double vx=stickState[0]*maxVelocityMPS;
-    double vy=stickState[1]*maxVelocityMPS;
-    double omega=stickState[2];
+    double vy=-stickState[1]*maxVelocityMPS;
+    double omega=-stickState[2];
     setMotors(vx,vy,omega);
 }
 
-// set motors using specified  vx,vy, omega
+// set motors using specified  vx,vy, omega in meters/sec and radians/sec
 public void setMotors(double vx,double vy, double omega ) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
     vx, vy, omega,  new Rotation2d(heading));
@@ -113,13 +116,6 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
 
   }
 
-  public void headingBumpCCW(){
-    headingset=headingset+0.06;
-  }
-
-  public void headingBumpCW(){
-    headingset=headingset-0.06;
-  }
 
 
 // a bunch of getters - so that the everything except the SwerveModules class can be 
@@ -135,7 +131,6 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
   }
 
 
-
   public void resetGyro() {
     gyro.resetAngle();
     resetOdometryToZero();
@@ -146,11 +141,15 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
     gyro.calibrate();
   }
 
+  public Command UpdateConstantsCommand() {
+    // implicitly requires `this`
+    return this.runOnce(() -> this.updateConstants());
+  }
+
   public void updateConstants() {
 
     maxVelocityMPS = 0.3048*maxVelocityFPS; 
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
-
     int i=0;
     while(i<4){
       modules[i].updateConstants();
