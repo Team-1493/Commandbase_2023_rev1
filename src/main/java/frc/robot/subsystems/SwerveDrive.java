@@ -22,6 +22,7 @@ public class SwerveDrive  extends SubsystemBase {
     public  double  maxVelocityFPS = 11.48;  //max speed in feet/sec
     public double maxVelocityMPS = 0.3048*maxVelocityFPS; // 3.5     
 
+
       
 public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   new Translation2d(0.257, -0.257), 
@@ -38,7 +39,7 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
 
   private double[] encPositionRad = new double[4];   // encoder position of swerve motors
   private String[] moduleNames={"FR","FL","BR","BL"};
-  
+  double omegaPrev=0,headingSet=0;
  
 
  // Constrcutor 
@@ -75,11 +76,21 @@ public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     double vx=stickState[0]*maxVelocityMPS;
     double vy=-stickState[1]*maxVelocityMPS;
     double omega=-stickState[2];
-    setMotors(vx,vy,omega);
+
+    if (Math.abs(omega)<0.01){
+      if( Math.abs(omegaPrev)>0.01) headingSet=heading;
+      setMotors(vx, vy,new Rotation2d(headingSet));
+    }
+    else setMotors(vx,vy,omega);
+    omegaPrev=omega;
 }
 
 
 public void setMotors(double vx,double vy, Rotation2d angle ) {
+  //  control will return immediately back to setMotorsFromStick. 
+  // We don't want to change the heading setpoint. Robot will keep turning to setpoint
+  // until rotate stick is pushed or this method is called again. 
+  omegaPrev=0;  
   rotatePID.setSetpoint(angle.getRadians()); 
   setMotors(vx,vy,rotatePID.calculate(heading));
 }
@@ -203,6 +214,7 @@ public void resetOdometryToZero(){
   @Override
   public void periodic() {
     heading=gyro.getHeadingRadians();
+    modulePos=getModulePositions();    
     try{
     m_odometry.update(
         new Rotation2d(heading),modulePos);
