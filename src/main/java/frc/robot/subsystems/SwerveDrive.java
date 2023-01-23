@@ -1,4 +1,9 @@
 package frc.robot.subsystems;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Sensors.Pigeon;
 
-public class SwerveDrive  extends SubsystemBase {
+public class SwerveDrive extends SubsystemBase {
 
     public SwerveModule[] modules = new SwerveModule[4];
     // Robot Dimensions for MK4 Swerve
@@ -23,7 +28,7 @@ public class SwerveDrive  extends SubsystemBase {
 
 
       
-public static  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   new Translation2d(0.257, -0.257), 
   new Translation2d(0.257, +0.257), 
   new Translation2d(-0.257, -0.257), 
@@ -285,9 +290,5 @@ static public  SwerveModuleState optimize(SwerveModuleState sms, double currentA
     return new SwerveModuleState(
         speed, new Rotation2d(optimizedAngle));
 }
-
-
-
-
 
 }
