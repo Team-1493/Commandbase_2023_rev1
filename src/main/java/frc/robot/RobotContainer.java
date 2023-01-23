@@ -7,7 +7,6 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveStick;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ResetGyro;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Stick;
@@ -15,7 +14,6 @@ import frc.robot.subsystems.Stick;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveDrive;
