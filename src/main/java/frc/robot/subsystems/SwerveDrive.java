@@ -66,7 +66,8 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     m_odometry=new SwerveDriveOdometry(m_kinematics,new Rotation2d(heading),modulePos, 
         new Pose2d(0,0,new Rotation2d(0)));
 
-    rotatePID=new PIDController(.01, 0, 0);   // need to tune this
+    rotatePID=new PIDController(0.00, 0, 0.0);   // need to tune this
+    rotatePID.setTolerance(.1);
     SmartDashboard.putNumber("Max Vel FPS",maxVelocityFPS);
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
 
@@ -81,11 +82,15 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     double vy=-stickState[1]*maxVelocityMPS;
     double omega=-stickState[2];
 
-    if (Math.abs(omega)<0.01){
-      if( Math.abs(omegaPrev)>0.01) headingSet=heading;
+    if (Math.abs(omega)<0.001){
+      SmartDashboard.putBoolean("rotateMode", true);
+      if( Math.abs(omegaPrev)>0.001) headingSet=heading;
       setMotors(vx, vy,new Rotation2d(headingSet));
     }
-    else setMotors(vx,vy,omega);
+    else {
+      setMotors(vx,vy,omega);
+      SmartDashboard.putBoolean("rotateMode", false);
+    }
     omegaPrev=omega;
 }
 
@@ -243,6 +248,8 @@ while(i<4){
   SmartDashboard.putNumber(moduleNames[i]+" Dvel",modules[i].getDriveVelocity()); 
   i++;
 }
+SmartDashboard.putNumber("Heading",heading);
+SmartDashboard.putNumber("PIDRotate Error",rotatePID.getPositionError());
 
 }
 
