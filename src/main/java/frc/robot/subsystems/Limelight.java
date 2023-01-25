@@ -6,20 +6,42 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.List;
+
+import org.opencv.core.Mat.Tuple2;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Limelight extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   public Limelight() {}
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  NetworkTableEntry tx = table.getEntry("tx");//X
+  NetworkTableEntry ty = table.getEntry("ty");//Y
+  NetworkTableEntry ta = table.getEntry("ta");//Area
+  NetworkTableEntry tv = table.getEntry("tv");//bool target seen
+  NetworkTableEntry ts = table.getEntry("ts");//rotation
+ 
+  public double[] getVisionTarget() {
+    double[] targetInfo = new double[4];
+    targetInfo[0] = tx.getDouble(0.0);
+    targetInfo[1] = ty.getDouble(0.0);
+    targetInfo[2] = ta.getDouble(0.0);
+    targetInfo[3] = ts.getDouble(0.0);
+    return targetInfo;
+  }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public CommandBase getVisionTargets() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    
+  public void switchVision(Boolean type){
+    if(type){ // REFLECTIVE TAPE
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipeline>").setNumber(0);
+    }
+    else{ // APRIL TAG
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipeline>").setNumber(1);
+    }
   }
 
   /**
