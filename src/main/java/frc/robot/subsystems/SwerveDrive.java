@@ -40,10 +40,11 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   public SwerveModulePosition[] modulePos = new SwerveModulePosition[4];
   public SwerveDriveOdometry m_odometry ;
   public PIDController rotatePID;
-
+  private double kProtate=0.01,kDrotate=0.0;
   private double[] encPositionRad = new double[4];   // encoder position of swerve motors
   private String[] moduleNames={"FR","FL","BR","BL"};
-  double omegaPrev=0,headingSet=0;
+  double headingSet=0;
+  boolean rotatePIDon=false;
  
 
  // Constrcutor 
@@ -66,10 +67,13 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     m_odometry=new SwerveDriveOdometry(m_kinematics,new Rotation2d(heading),modulePos, 
         new Pose2d(0,0,new Rotation2d(0)));
 
-    rotatePID=new PIDController(.01, 0, 0);   // need to tune this
+    rotatePID=new PIDController(kProtate, 0, kDrotate);   // need to tune this
+    rotatePID.setTolerance(.02);
+    rotatePID.setSetpoint(0);
     SmartDashboard.putNumber("Max Vel FPS",maxVelocityFPS);
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
-
+    SmartDashboard.putNumber("kProtate",kProtate);
+    SmartDashboard.putNumber("kDrotate",kDrotate);
 
   }      
 
@@ -81,12 +85,19 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     double vy=-stickState[1]*maxVelocityMPS;
     double omega=-stickState[2];
 
-    if (Math.abs(omega)<0.01){
-      if( Math.abs(omegaPrev)>0.01) headingSet=heading;
+    if (Math.abs(omega)<0.001){
+      if( !rotatePIDon) {
+        headingSet=heading;
+        rotatePIDon=true;
+      }
       setMotors(vx, vy,new Rotation2d(headingSet));
     }
-    else setMotors(vx,vy,omega);
-    omegaPrev=omega;
+    else {
+      rotatePIDon=false;
+      setMotors(vx,vy,omega);
+    }
+    SmartDashboard.putBoolean("rotateMode", rotatePIDon);
+    SmartDashboard.putNumber("heading set", headingSet);
 }
 
 
@@ -94,13 +105,16 @@ public void setMotors(double vx,double vy, Rotation2d angle ) {
   //  control will return immediately back to setMotorsFromStick. 
   // We don't want to change the heading setpoint. Robot will keep turning to setpoint
   // until rotate stick is pushed or this method is called again. 
-  omegaPrev=0;  
+  rotatePIDon=true;  
   rotatePID.setSetpoint(angle.getRadians()); 
+  SmartDashboard.putNumber("rotatePID calc", rotatePID.calculate(heading));
+  SmartDashboard.putNumber("heading error", rotatePID.getPositionError());
   setMotors(vx,vy,rotatePID.calculate(heading));
 }
 
 // set motors using specified  vx,vy, omega in meters/sec and radians/sec
-public void setMotors(double vx,double vy, double omega ) {
+   public void setMotors(double vx,double vy, double omega ) {
+  SmartDashboard.putNumber("headng", heading);
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
     vx, vy, omega,  new Rotation2d(heading));
 // Convert to speeds module states
@@ -173,10 +187,14 @@ public void setModuleStates(SwerveModuleState[] moduleStates){
     maxVelocityMPS = 0.3048*maxVelocityFPS; 
     SmartDashboard.putNumber("Max Drive RPM",modules[0].MPStoRPM(maxVelocityMPS));
     int i=0;
-    while(i<4){
+ /*    while(i<4){
       modules[i].updateConstants();
       i++;
-    }
+    } */
+    kProtate=SmartDashboard.getNumber("kProtate", 0);
+    kDrotate=SmartDashboard.getNumber("kDrotate", 0);
+    rotatePID.setP(kProtate);
+    rotatePID.setD(kDrotate);
   }
 
   public void setPIDSlot(int slot){
@@ -243,6 +261,8 @@ while(i<4){
   SmartDashboard.putNumber(moduleNames[i]+" Dvel",modules[i].getDriveVelocity()); 
   i++;
 }
+SmartDashboard.putNumber("Heading",heading);
+SmartDashboard.putNumber("PIDRotate Error",rotatePID.getPositionError());
 
 }
 
