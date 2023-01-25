@@ -34,7 +34,7 @@ public class RobotContainer {
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
 
   public JoystickButton btnResetGyro = driverJoystick.getButton(2);
-  public JoystickButton updateConstants = driverJoystick.getButton(3);
+  public JoystickButton btnUpdateConstants = driverJoystick.getButton(3);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
@@ -49,7 +49,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
-    new Trigger(updateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
+    new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
 
   }
 
