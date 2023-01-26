@@ -7,9 +7,11 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveStick;
+import frc.robot.commands.FollowLimelight;
 import frc.robot.commands.ResetGyro;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Stick;
+import frc.robot.subsystems.Limelight;
 
 import java.util.function.Supplier;
 
@@ -28,6 +30,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here..
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
+  public final Limelight m_Limelight = new Limelight();
   public final Stick driverJoystick =new Stick();
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
@@ -35,6 +38,7 @@ public class RobotContainer {
 
   public JoystickButton btnResetGyro = driverJoystick.getButton(2);
   public JoystickButton btnUpdateConstants = driverJoystick.getButton(3);
+  public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
@@ -50,7 +54,7 @@ public class RobotContainer {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
-
+    new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
   }
 
   /**

@@ -27,11 +27,12 @@ public class Limelight extends SubsystemBase {
   NetworkTableEntry ts = table.getEntry("ts");//rotation
  
   public double[] getVisionTarget() {
-    double[] targetInfo = new double[4];
-    targetInfo[0] = tx.getDouble(0.0);
-    targetInfo[1] = ty.getDouble(0.0);
-    targetInfo[2] = ta.getDouble(0.0);
-    targetInfo[3] = ts.getDouble(0.0);
+    double[] targetInfo = new double[5];
+    targetInfo[0] = tv.getDouble(0.0);//Target Seen
+    targetInfo[1] = tx.getDouble(0.0);//X
+    targetInfo[2] = ty.getDouble(0.0);//Y
+    targetInfo[3] = ta.getDouble(0.0);//Area
+    targetInfo[4] = ts.getDouble(0.0);//Rotation
     return targetInfo;
   }
 
