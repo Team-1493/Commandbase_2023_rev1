@@ -23,8 +23,7 @@ public class Robot extends TimedRobot {
   private static final String kAuto2 = "Auto 2";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  Command auto1Command=m_robotContainer.getAutonomousCommand1();
-  Command auto2Command=m_robotContainer.getAutonomousCommand2();
+  Command auto1Command, auto2Command;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -34,6 +33,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings
     m_robotContainer = new RobotContainer();
+    auto1Command=m_robotContainer.getAutonomousCommand1();
+    auto2Command=m_robotContainer.getAutonomousCommand2();
     m_chooser.setDefaultOption("Auto 1", kAuto1);
     m_chooser.addOption("Auto 2", kAuto2);
     SmartDashboard.putData("Auto choices", m_chooser);
