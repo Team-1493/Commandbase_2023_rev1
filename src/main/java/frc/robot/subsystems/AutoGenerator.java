@@ -28,8 +28,8 @@ import frc.robot.subsystems.SwerveModule;
 
 
 public class AutoGenerator extends SubsystemBase{
-    public PathPlannerTrajectory testPath1 = PathPlanner.loadPath("test path", new PathConstraints(4, 3));
-    public PathPlannerTrajectory testPath2 = PathPlanner.loadPath("test path", new PathConstraints(4, 3));
+    public PathPlannerTrajectory testPath1 = PathPlanner.loadPath("testPath1", new PathConstraints(4, 3));
+    public PathPlannerTrajectory testPath2 = PathPlanner.loadPath("testPath2", new PathConstraints(4, 3));
     private HashMap<String, Command> eventMap = new HashMap<>();
     private SwerveDrive sds;
 
@@ -45,6 +45,8 @@ public class AutoGenerator extends SubsystemBase{
         eventMap.put("intake_off", new PrintCommand("Intake Off"));
         eventMap.put("place_cube_2", new PrintCommand("Cube has been placed!"));
         eventMap.put("balance_robot", new PrintCommand("Balanced Robot"));
+        eventMap.put("path_started", new PrintCommand("Path has started!"));
+        eventMap.put("path_complete", new PrintCommand("Path is complete!"));
 
         //Examples of events that could be used for only one path (testPath):
         eventMap.put("testPath_marker1", new PrintCommand("Passed marker 1"));
