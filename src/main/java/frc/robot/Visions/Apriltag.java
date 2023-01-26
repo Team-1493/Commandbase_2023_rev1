@@ -74,19 +74,21 @@ public class Apriltag {
         FPS = fps.getDouble((0));
         Tag_id = tag_id.getDouble((0));
         
-        tx = translation_x.getDouble((0));
-        ty = translation_y.getDouble((0));
-        tz = translation_z.getDouble((0));
+        tx = translation_x.getDouble((0)); // horizontal movement of the apriltag 1/10
+        ty = translation_y.getDouble((0)); // vertical movement of the apriltag 1/10
+        tz = translation_z.getDouble((0)); // the distance betweeen the april tag and the camera, (if the april tag is directly near the camera then, 0)
 
-        rx = rotation_x.getDouble((0));
-        ry = rotation_y.getDouble((0));
-        rz = rotation_z.getDouble((0));
+        rx = rotation_x.getDouble((0));  // the vertically flipping of the apriltag
+        ry = rotation_y.getDouble((0)); // the horizontal flipping of the apriltag
+        rz = rotation_z.getDouble((0)); // the rotation of the apriltag
 
         SwerveDrive drivemotors = new SwerveDrive();
+        
+        double velx = 0.0;
+        double vely = 0.0;
+        double angle = Math.atan((tx * 10)/(tz * 10));
 
-        /* Find what each estimation values does and use them to move the robot */
-
-        // drivemotors.setMotors(1, 1, 0);
+        drivemotors.setMotors(0, 0, angle);
 
     }
 
