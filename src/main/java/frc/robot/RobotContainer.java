@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.subsystems.AutoGenerator;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.ResetGyro;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -28,6 +27,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here..
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
+  public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
@@ -36,8 +36,8 @@ public class RobotContainer {
   public JoystickButton btnResetGyro = driverJoystick.getButton(2);
   public JoystickButton btnUpdateConstants = driverJoystick.getButton(3);
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
 
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     m_swervedriveSystem.setDefaultCommand(driveCommand);
@@ -50,16 +50,31 @@ public class RobotContainer {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
-
+    
+    new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
+    new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));
+    new Trigger(driverJoystick.pov180).onTrue(m_swervedriveSystem.rotateInPlace(180));   
+    new Trigger(driverJoystick.pov270).onTrue(m_swervedriveSystem.rotateInPlace(-90));
+    
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
+
+  public Command getAutonomousCommand1() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return autoGenerator.autoCommand1();
   }
+
+  public Command getAutonomousCommand2() {
+    // An example command will be run in autonomous
+    return autoGenerator.autoCommand2();
+  }
+
+// We have different PID constants for the drive wheels between teleop and auto
+// Switch between slot 0 for teleop and slot 1 for auto 
+  public void setPIDslot(int slot){
+    m_swervedriveSystem.setPIDSlot(slot);
+  }
+
+
+
 }
