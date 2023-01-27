@@ -39,7 +39,8 @@ public class RobotContainer {
   public JoystickButton btnResetGyro = driverJoystick.getButton(2);
   public JoystickButton btnUpdateConstants = driverJoystick.getButton(3);
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
-
+  public JoystickButton coneGrabberForward = driverJoystick.getButton(6); // R1
+  public JoystickButton coneGrabberBackward = driverJoystick.getButton(5); //L1
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -61,6 +62,15 @@ public class RobotContainer {
     new Trigger(driverJoystick.pov180).onTrue(m_swervedriveSystem.rotateInPlace(180));   
     new Trigger(driverJoystick.pov270).onTrue(m_swervedriveSystem.rotateInPlace(-90));
     
+/*  Tayab - you need to rethink these
+ 
+    new Trigger(moveMotorForward).onTrue(grabbingCone.rotateMotorFoward.until(coneLimitSwitch::get));
+    new Trigger(moveMotorBackward).onTrue(grabbingCone.rotateMotorBackward.until(coneLimitSwitch::get));
+
+    new Trigger(coneGrabberForwardButton).onTrue(grabbingCone.rotateMotorFoward);
+    new Trigger(coneGrabberBackwardButton).onTrue(grabbingCone.rotateMotorBackward);
+ */
+
   }
 
 
