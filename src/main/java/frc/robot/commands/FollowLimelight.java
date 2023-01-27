@@ -11,8 +11,8 @@ public class FollowLimelight extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private SwerveDrive m_SwerveDrive;
   private Limelight m_limelight;
-  private double kP_rotation = -0.1;
-  private double kP_forwardDistance = 0.1;
+  private double kP_rotation = -0.05;
+  private double kP_forwardDistance = 0.3;
   private double kP_sideDistance = 0.1;
 
   private double rotation;
@@ -22,9 +22,12 @@ public class FollowLimelight extends CommandBase {
   private double xVel = 0;
   private double yVel = 0;
 
-  private double rotationCutOff = 0.1;
+  private double rotationCutOff = 0.5;
   private double sideDistanceCutOff = 0.1;
-  private double CutOff = 0.1;
+  private double desiredForwardDistance = 3;
+  private double forwardDistanceCutOff = 0.5;
+
+  private double[] target;
 
 
   public FollowLimelight(SwerveDrive sd, Limelight limelight) {
@@ -46,15 +49,15 @@ public class FollowLimelight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double[] target = m_limelight.getVisionTarget();
+    target = m_limelight.getVisionTarget();
     kP_rotation = SmartDashboard.getNumber("Limelight Rotation kP", kP_rotation);
-    kP_forwardDistance = SmartDashboard.getNumber("Limelight Side Distance kP", kP_sideDistance);
-    kP_sideDistance = SmartDashboard.getNumber("Limelight Forward Distance kP", kP_forwardDistance);
+    kP_sideDistance = SmartDashboard.getNumber("Limelight Side Distance kP", kP_sideDistance);
+    kP_forwardDistance = SmartDashboard.getNumber("Limelight Forward Distance kP", kP_forwardDistance);
 
     rotation = target[1]*kP_rotation;
-    forwardDistance = (3-target[3])*kP_forwardDistance;
+    forwardDistance = (desiredForwardDistance-target[3])*kP_forwardDistance;
     sideDistance = target[4]*kP_sideDistance;
-    
+    System.out.println("Tx: "+target[1]+" R: "+rotation+" H: "+m_SwerveDrive.heading);
     //FIELD CENTRIC MOTION - MOVING FORWARD TOWARD APRILTAG
     xVel = Math.cos(m_SwerveDrive.heading)*forwardDistance;//FIELD FORWARD
     yVel = Math.sin(m_SwerveDrive.heading)*forwardDistance;//FIELD LEFT & RIGHT
@@ -74,9 +77,9 @@ public class FollowLimelight extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    /*if (rotation <= rotationCutOff){
+    if (target[1] <= rotationCutOff && desiredForwardDistance-target[3] <= forwardDistanceCutOff){
       return true;
-    }*/
+    }
     return false;
   }
 }
