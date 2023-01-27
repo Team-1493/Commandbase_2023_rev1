@@ -8,6 +8,7 @@ import frc.robot.subsystems.AutoGenerator;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.FollowLimelight;
 import frc.robot.commands.ResetGyro;
+import frc.robot.commands.ReflectiveTape;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Stick;
 import frc.robot.subsystems.Limelight;
@@ -32,10 +33,12 @@ public class RobotContainer {
   public final Limelight m_Limelight = new Limelight();
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
+  public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
 
+  public JoystickButton btnAimAtTape = driverJoystick.getButton(1);
   public JoystickButton btnResetGyro = driverJoystick.getButton(2);
   public JoystickButton btnUpdateConstants = driverJoystick.getButton(3);
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
@@ -56,7 +59,9 @@ public class RobotContainer {
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
-    
+    new Trigger(btnAimAtTape).whileTrue(reflectivetape);
+
+    new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));
     new Trigger(driverJoystick.pov180).onTrue(m_swervedriveSystem.rotateInPlace(180));   
