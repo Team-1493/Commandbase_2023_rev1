@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
         break;
     }
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
+    if (m_autonomousCommand != null) {        
       m_autonomousCommand.schedule();
     }
   }
@@ -102,7 +102,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    
+  }
 
 
 }

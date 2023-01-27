@@ -7,6 +7,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -67,9 +68,9 @@ public class AutoGenerator extends SubsystemBase{
         eventMap.put("testPath1_marker1", new PrintCommand("Passed marker 1"));
         eventMap.put("testPath1_marker2", new PrintCommand("Passed marker 2"));
 
-        SmartDashboard.putBoolean("Auto Event1", false);
-        SmartDashboard.putBoolean("Auto Event2", false);
-        SmartDashboard.putBoolean("Auto Event3", false);
+        SmartDashboard.putBoolean("Auto event1", false);
+        SmartDashboard.putBoolean("Auto event2", false);
+        SmartDashboard.putBoolean("Auto event3", false);
 
         
         double timeEnd = testPath1.getEndState().timeSeconds;
@@ -79,7 +80,9 @@ public class AutoGenerator extends SubsystemBase{
             System.out.println(state.poseMeters.getX()+",  "+state.poseMeters.getY()+", "+state.poseMeters.getRotation().getDegrees()+", "+", "+state.velocityMetersPerSecond);
             t=t+0.1;
         };
-        
+ //       System.out.println(testPath1.getMarkers().get(1));
+ //       System.out.println(testPath1.getMarkers().get(2));
+//       System.out.println(testPath1.getMarkers().get(3));
     }
     
     //Builds and returns a PPSwerveControllerCommand for the given path
