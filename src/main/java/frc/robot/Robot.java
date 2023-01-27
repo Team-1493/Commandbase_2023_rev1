@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
         break;
     }
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
+    if (m_autonomousCommand != null) {        
       m_autonomousCommand.schedule();
     }
   }
