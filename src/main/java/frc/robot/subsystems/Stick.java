@@ -3,11 +3,16 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 // This is more of a utility subsystem than an actual subsystem
 
 public class Stick extends SubsystemBase {
   public Joystick joy0=new Joystick(0);
+  public POVButton pov0=new POVButton(joy0, 0);
+  public POVButton pov90=new POVButton(joy0, 90);
+  public POVButton pov180=new POVButton(joy0, 180);
+  public POVButton pov270=new POVButton(joy0, 270);
   
   public Stick() {
 
