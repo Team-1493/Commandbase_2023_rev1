@@ -29,11 +29,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here..
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
-<<<<<<< HEAD
   public final Limelight m_Limelight = new Limelight();
-=======
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
->>>>>>> a0e8b3eced791adfcdff1424ee68e3cc4edeec0f
   public final Stick driverJoystick =new Stick();
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
@@ -57,16 +54,13 @@ public class RobotContainer {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
-<<<<<<< HEAD
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
-=======
     
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));
     new Trigger(driverJoystick.pov180).onTrue(m_swervedriveSystem.rotateInPlace(180));   
     new Trigger(driverJoystick.pov270).onTrue(m_swervedriveSystem.rotateInPlace(-90));
     
->>>>>>> a0e8b3eced791adfcdff1424ee68e3cc4edeec0f
   }
 
 
