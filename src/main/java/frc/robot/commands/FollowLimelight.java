@@ -15,7 +15,7 @@ public class FollowLimelight extends CommandBase {
   private double kP_forwardDistance = 0.3;
   private double kP_sideDistance = 0.1;
 
-  private double rotation;1
+  private double rotation;
   private double sideDistance;
   private double forwardDistance;
 
