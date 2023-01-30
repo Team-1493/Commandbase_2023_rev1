@@ -41,7 +41,7 @@ public class AutoGenerator extends SubsystemBase{
     
     //Defining the SwerveDrive used during autonomous
     private SwerveDrive sds;
-     PIDController thetaController = new PIDController(.01, 0, 0);
+    PIDController thetaController = new PIDController(.01, 0, 0);
 
     //This method will be called once during the beginning of autonomous
     public AutoGenerator(SwerveDrive m_sds) {
@@ -50,27 +50,28 @@ public class AutoGenerator extends SubsystemBase{
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
 
+        //Putting all default Smartdashboard values relating to auto paths
+        SmartDashboard.putBoolean("Intake_Is_On", false);
+        SmartDashboard.putNumber("Path_position", 0.00);
+
         //Putting all possible events in the global eventMap
         //(PrintCommand = placeholder)
         //Example of events that could be used for multiple paths:
-        eventMap.put("intake_on", new PrintCommand("Intake On"));
         eventMap.put("intake_off", new PrintCommand("Intake Off"));
+
+        eventMap.put("intake_on", new InstantCommand(() -> SmartDashboard.putBoolean("Intake_Is_On", true)));
+        
         eventMap.put("place_cube_2", new PrintCommand("Cube has been placed!"));
         eventMap.put("balance_robot", new PrintCommand("Balanced Robot"));
         eventMap.put("path_started", new PrintCommand("Path has started"));
         eventMap.put("path_ended", new PrintCommand("Path has ended"));
-        
-        eventMap.put("event1", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event1", true)));
-        eventMap.put("event2", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event2", true)));
-        eventMap.put("event3", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event3", true)));
 
-        //Examples of events that could be used for only one path (testPath1):
-        eventMap.put("testPath1_marker1", new PrintCommand("Passed marker 1"));
-        eventMap.put("testPath1_marker2", new PrintCommand("Passed marker 2"));
 
-        SmartDashboard.putBoolean("Auto event1", false);
-        SmartDashboard.putBoolean("Auto event2", false);
-        SmartDashboard.putBoolean("Auto event3", false);
+        eventMap.put("marker_1", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.25)));
+        eventMap.put("marker_2", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.50)));
+        eventMap.put("marker_3", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.75)));
+        eventMap.put("marker_4", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 1.00)));
+
 
         
         double timeEnd = testPath1.getEndState().timeSeconds;
