@@ -51,9 +51,27 @@
   ],
   "markers": [
     {
-      "position": 0.45454545454545453,
+      "position": 0.5,
       "names": [
-        "event2"
+        "marker_2"
+      ]
+    },
+    {
+      "position": 0.25,
+      "names": [
+        "marker_1"
+      ]
+    },
+    {
+      "position": 0.75,
+      "names": [
+        "marker_3"
+      ]
+    },
+    {
+      "position": 1.0,
+      "names": [
+        "marker_4"
       ]
     }
   ]

@@ -14,9 +14,6 @@
       "open": false
     },
     "transitory": {
-      "Shuffleboard": {
-        "open": true
-      },
       "SmartDashboard": {
         "Auto choices": {
           "open": true
