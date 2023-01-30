@@ -56,7 +56,6 @@ public void initialize() {
             sds.setMotors(0, 0, omega);
         }
         else  sds.setMotors(0, 0, 0);
-
     }
     
 
