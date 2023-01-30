@@ -15,7 +15,7 @@ public class FollowLimelight extends CommandBase {
   private double kP_forwardDistance = 0.3;
   private double kP_sideDistance = 0.1;
 
-  private double rotation;
+  private double rotation;1
   private double sideDistance;
   private double forwardDistance;
 
@@ -59,7 +59,7 @@ public class FollowLimelight extends CommandBase {
     sideDistance = target[4]*kP_sideDistance;
     System.out.println("Tx: "+target[1]+" R: "+rotation+" H: "+m_SwerveDrive.heading);
     //FIELD CENTRIC MOTION - MOVING FORWARD TOWARD APRILTAG
-    
+
     xVel = Math.cos(m_SwerveDrive.heading)*forwardDistance;//FIELD FORWARD
     yVel = Math.sin(m_SwerveDrive.heading)*forwardDistance;//FIELD LEFT & RIGHT
     
