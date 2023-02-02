@@ -41,13 +41,27 @@ public class AutoGenerator extends SubsystemBase{
     
     //Defining the SwerveDrive used during autonomous
     private SwerveDrive sds;
+    
     PIDController thetaController = new PIDController(.01, 0, 0);
+    PIDController positionController = new PIDController(0.01, 0, 0);
+
 
     //This method will be called once during the beginning of autonomous
     public AutoGenerator(SwerveDrive m_sds) {
         //defining the SwerveDrive used during autonomous as the instance given by the method
         sds = m_sds;
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        
+        //Putting Position PID values in the SmartDashboard
+        SmartDashboard.putNumber("Position_kP", positionController.getP());
+        SmartDashboard.putNumber("Position_kI", positionController.getI());
+        SmartDashboard.putNumber("Position_kD", positionController.getD());
+        
+        //Putting Rotation PID values in the SmartDashboard
+        SmartDashboard.putNumber("Rotation_kP", thetaController.getP());
+        SmartDashboard.putNumber("Rotation_kI", thetaController.getI());
+        SmartDashboard.putNumber("Rotation_kD", thetaController.getD());
+
 
 
         //Putting all default Smartdashboard values relating to auto paths
@@ -66,21 +80,18 @@ public class AutoGenerator extends SubsystemBase{
         eventMap.put("path_started", new PrintCommand("Path has started"));
         eventMap.put("path_ended", new PrintCommand("Path has ended"));
 
-
-        eventMap.put("marker_1", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.25)));
-        eventMap.put("marker_2", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.50)));
-        eventMap.put("marker_3", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.75)));
-        eventMap.put("marker_4", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 1.00)));
-
-
+        eventMap.put("marker_1", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.0)));
+        eventMap.put("marker_2", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.5)));
+        eventMap.put("marker_3", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 1.0)));
         
-        double timeEnd = testPath1.getEndState().timeSeconds;
-        double t = 0;
-        while  (t<timeEnd){
-            State state = testPath1.sample(t);
-            System.out.println(state.poseMeters.getX()+",  "+state.poseMeters.getY()+", "+state.poseMeters.getRotation().getDegrees()+", "+", "+state.velocityMetersPerSecond);
-            t=t+0.1;
-        };
+        
+        //double timeEnd = testPath1.getEndState().timeSeconds;
+        //double t = 0;
+        //while  (t<timeEnd){
+        //    State state = testPath1.sample(t);
+        //    System.out.println(state.poseMeters.getX()+",  "+state.poseMeters.getY()+", "+state.poseMeters.getRotation().getDegrees()+", "+", "+state.velocityMetersPerSecond);
+        //    t=t+0.1;
+        //};
  //       System.out.println(testPath1.getMarkers().get(1));
  //       System.out.println(testPath1.getMarkers().get(2));
 //       System.out.println(testPath1.getMarkers().get(3));
@@ -92,9 +103,9 @@ public class AutoGenerator extends SubsystemBase{
             retrievedPath, 
             sds::getPose,
             SwerveDrive.m_kinematics, 
-            new PIDController(.01, 0, 0), 
-            new PIDController(.01, 0, 0), 
-            new PIDController(.01, 0, 0),
+            positionController, //x
+            positionController, //y
+            thetaController, //rotation
             sds::setModuleStates, 
             true,
             sds
@@ -109,6 +120,11 @@ public class AutoGenerator extends SubsystemBase{
             eventMap
         );
     } 
+
+    public void updatePID(){
+        positionController.setPID(SmartDashboard.getNumber("Position_kP", positionController.getP()),SmartDashboard.getNumber("Position_kI", positionController.getI()),SmartDashboard.getNumber("Position_kD", positionController.getD()));
+        thetaController.setPID(SmartDashboard.getNumber("Rotation_kP", positionController.getP()),SmartDashboard.getNumber("Rotation_kI", positionController.getI()),SmartDashboard.getNumber("Rotation_kD", positionController.getD()));
+    }
 
     public SequentialCommandGroup autoCommand1() {
         return new SequentialCommandGroup(
