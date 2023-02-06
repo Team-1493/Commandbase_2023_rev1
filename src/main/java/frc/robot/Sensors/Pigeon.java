@@ -27,7 +27,16 @@ public class Pigeon {
         else if (angle <-180) angle = angle + 360;
         return angle;
     } 
-
+    public double getRoll(){
+        double[] roll = new double[2];
+        pigeon.getYawPitchRoll(roll);
+        return roll[2];
+    }
+    public double getPitch(){
+        double[] pitch = new double[2];
+        pigeon.getYawPitchRoll(pitch);
+        return pitch[2];
+    }
     public double getHeadingRadians(){
         return getHeadingDegrees()*Math.PI/180.;
     }

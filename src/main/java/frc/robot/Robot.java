@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
 
     switch (m_autoSelected) {
       case kAuto1:
-        m_autonomousCommand=auto1Command;
+        m_autonomousCommand=m_robotContainer.getAutonomousCommand1();
         break;
       case kAuto2:
         m_autonomousCommand=auto2Command;

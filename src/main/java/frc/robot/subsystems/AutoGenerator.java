@@ -41,45 +41,57 @@ public class AutoGenerator extends SubsystemBase{
     
     //Defining the SwerveDrive used during autonomous
     private SwerveDrive sds;
-     PIDController thetaController = new PIDController(.01, 0, 0);
+    
+    PIDController thetaController = new PIDController(.01, 0, 0);
+    PIDController positionController = new PIDController(0.01, 0, 0);
+
 
     //This method will be called once during the beginning of autonomous
     public AutoGenerator(SwerveDrive m_sds) {
         //defining the SwerveDrive used during autonomous as the instance given by the method
         sds = m_sds;
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        
+        //Putting Position PID values in the SmartDashboard
+        SmartDashboard.putNumber("Position_kP", positionController.getP());
+        SmartDashboard.putNumber("Position_kI", positionController.getI());
+        SmartDashboard.putNumber("Position_kD", positionController.getD());
+        
+        //Putting Rotation PID values in the SmartDashboard
+        SmartDashboard.putNumber("Rotation_kP", thetaController.getP());
+        SmartDashboard.putNumber("Rotation_kI", thetaController.getI());
+        SmartDashboard.putNumber("Rotation_kD", thetaController.getD());
 
+
+
+        //Putting all default Smartdashboard values relating to auto paths
+        SmartDashboard.putBoolean("Intake_Is_On", false);
+        SmartDashboard.putNumber("Path_position", 0.00);
 
         //Putting all possible events in the global eventMap
         //(PrintCommand = placeholder)
         //Example of events that could be used for multiple paths:
-        eventMap.put("intake_on", new PrintCommand("Intake On"));
         eventMap.put("intake_off", new PrintCommand("Intake Off"));
+
+        eventMap.put("intake_on", new InstantCommand(() -> SmartDashboard.putBoolean("Intake_Is_On", true)));
+        
         eventMap.put("place_cube_2", new PrintCommand("Cube has been placed!"));
         eventMap.put("balance_robot", new PrintCommand("Balanced Robot"));
         eventMap.put("path_started", new PrintCommand("Path has started"));
         eventMap.put("path_ended", new PrintCommand("Path has ended"));
+
+        eventMap.put("marker_1", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.0)));
+        eventMap.put("marker_2", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 0.5)));
+        eventMap.put("marker_3", new InstantCommand(() -> SmartDashboard.putNumber("Path_position", 1.0)));
         
-        eventMap.put("event1", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event1", true)));
-        eventMap.put("event2", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event2", true)));
-        eventMap.put("event3", new InstantCommand( () -> SmartDashboard.putBoolean("Auto event3", true)));
-
-        //Examples of events that could be used for only one path (testPath1):
-        eventMap.put("testPath1_marker1", new PrintCommand("Passed marker 1"));
-        eventMap.put("testPath1_marker2", new PrintCommand("Passed marker 2"));
-
-        SmartDashboard.putBoolean("Auto event1", false);
-        SmartDashboard.putBoolean("Auto event2", false);
-        SmartDashboard.putBoolean("Auto event3", false);
-
         
-        double timeEnd = testPath1.getEndState().timeSeconds;
-        double t = 0;
-        while  (t<timeEnd){
-            State state = testPath1.sample(t);
-            System.out.println(state.poseMeters.getX()+",  "+state.poseMeters.getY()+", "+state.poseMeters.getRotation().getDegrees()+", "+", "+state.velocityMetersPerSecond);
-            t=t+0.1;
-        };
+        //double timeEnd = testPath1.getEndState().timeSeconds;
+        //double t = 0;
+        //while  (t<timeEnd){
+        //    State state = testPath1.sample(t);
+        //    System.out.println(state.poseMeters.getX()+",  "+state.poseMeters.getY()+", "+state.poseMeters.getRotation().getDegrees()+", "+", "+state.velocityMetersPerSecond);
+        //    t=t+0.1;
+        //};
  //       System.out.println(testPath1.getMarkers().get(1));
  //       System.out.println(testPath1.getMarkers().get(2));
 //       System.out.println(testPath1.getMarkers().get(3));
@@ -91,9 +103,9 @@ public class AutoGenerator extends SubsystemBase{
             retrievedPath, 
             sds::getPose,
             SwerveDrive.m_kinematics, 
-            new PIDController(.01, 0, 0), 
-            new PIDController(.01, 0, 0), 
-            new PIDController(.01, 0, 0),
+            positionController, //x
+            positionController, //y
+            thetaController, //rotation
             sds::setModuleStates, 
             true,
             sds
@@ -108,6 +120,11 @@ public class AutoGenerator extends SubsystemBase{
             eventMap
         );
     } 
+
+    public void updatePID(){
+        positionController.setPID(SmartDashboard.getNumber("Position_kP", positionController.getP()),SmartDashboard.getNumber("Position_kI", positionController.getI()),SmartDashboard.getNumber("Position_kD", positionController.getD()));
+        thetaController.setPID(SmartDashboard.getNumber("Rotation_kP", positionController.getP()),SmartDashboard.getNumber("Rotation_kI", positionController.getI()),SmartDashboard.getNumber("Rotation_kD", positionController.getD()));
+    }
 
     public SequentialCommandGroup autoCommand1() {
         return new SequentialCommandGroup(
