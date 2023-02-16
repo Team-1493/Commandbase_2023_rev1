@@ -6,21 +6,23 @@ import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class FollowLimelight extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private SwerveDrive m_SwerveDrive;
   private Limelight m_limelight;
-  private double kP_rotation = 0.04;
-  private double kD_rotation = 0.002;
-  private double kP_forwardDistance = -0.3;
-  private double kD_forwardDistance = 0;
-  private double kP_sideDistance = 1.25;
-  private double kD_sideDistance = 0.1;
+  private double kP_forward = -0.3;
+  private double kD_forward = 0;
+  private double kP_rotation = 0.05;
+  private double kD_rotation = 0.0005;
+  private double kP_side = -0.5;
+  private double kD_side = 0.001;
 
   private PIDController RotPIDController;
   private PIDController FDPIDController;
-  private PIDController SidePIDController;
+  private ProfiledPIDController SidePIDController;
 
 
   private double rotation;
@@ -33,9 +35,11 @@ public class FollowLimelight extends CommandBase {
   private double desiredHeading;
 
   private double rotationCutOff = 0.5;
-  private double sideDistanceCutOff = 0.1;
-  private double desiredForwardDistance = 3;
+  private double sideDistanceCutOff = 0.05;
+  private double desiredForwardDistance = 2.5;
   private double forwardDistanceCutOff = 0.5;
+
+  private double counter = 0;
 
   private double[] target;
 
@@ -45,11 +49,14 @@ public class FollowLimelight extends CommandBase {
     SmartDashboard.putNumber("Limelight Rotation kP", kP_rotation);
     SmartDashboard.putNumber("Limelight Rotation kD", kD_rotation);
     SmartDashboard.putNumber("Limelight Rotation Cut Off", rotationCutOff);
-    SmartDashboard.putNumber("Limelight Side Distance kP", kP_sideDistance);
-    SmartDashboard.putNumber("Limelight Side Distance kD", kD_sideDistance);
-    SmartDashboard.putNumber("Limelight Forward Distance kP", kP_forwardDistance);
-    SmartDashboard.putNumber("Limelight Forward Distance kD", kD_forwardDistance);
+    SmartDashboard.putNumber("Limelight Side kP", kP_side);
+    SmartDashboard.putNumber("Limelight Side kD", kD_side);
+    SmartDashboard.putNumber("Limelight Side Distance Cut Off", sideDistanceCutOff);
+    SmartDashboard.putNumber("Limelight Forward kP", kP_forward);
+    SmartDashboard.putNumber("Limelight Forward kD", kD_forward);
     SmartDashboard.putNumber("Limelight Desired Forward Distance", desiredForwardDistance);
+    SmartDashboard.putNumber("Limelight Forward Distance Cut Off", forwardDistanceCutOff);
+
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sd, limelight);
@@ -61,15 +68,19 @@ public class FollowLimelight extends CommandBase {
     kP_rotation = SmartDashboard.getNumber("Limelight Rotation kP", kP_rotation);
     kD_rotation = SmartDashboard.getNumber("Limelight Rotation kD", kD_rotation);
     rotationCutOff  = SmartDashboard.getNumber("Limelight Rotation Cut Off", rotationCutOff);
-    kP_sideDistance= SmartDashboard.getNumber("Limelight Side Distance kP", kP_sideDistance);
-    kD_sideDistance= SmartDashboard.getNumber("Limelight Side Distance kD", kD_sideDistance);
-    kP_forwardDistance = SmartDashboard.getNumber("Limelight Forward Distance kP", kP_forwardDistance);
-    kD_forwardDistance = SmartDashboard.getNumber("Limelight Forward Distance kD", kD_forwardDistance);
+    kP_side= SmartDashboard.getNumber("Limelight Side kP", kP_side);
+    kD_side= SmartDashboard.getNumber("Limelight Side kD", kD_side);
+    sideDistanceCutOff  = SmartDashboard.getNumber("Limelight Side Distance Cut Off", sideDistanceCutOff);
+    kP_forward = SmartDashboard.getNumber("Limelight Forward kP", kP_forward);
+    kD_forward = SmartDashboard.getNumber("Limelight Forward kD", kD_forward);
     desiredForwardDistance = SmartDashboard.getNumber("Limelight Desired Forward Distance", desiredForwardDistance);
+    forwardDistanceCutOff  = SmartDashboard.getNumber("Limelight Forward Distance Cut Off", forwardDistanceCutOff);
 
-    FDPIDController = new PIDController(kP_forwardDistance, 0, kD_forwardDistance);
+
+    Constraints sideConstraint = new Constraints(2,1);
+    FDPIDController = new PIDController(kP_forward, 0, kD_forward);
     RotPIDController = new PIDController(kP_rotation, 0, kD_rotation);
-    SidePIDController = new PIDController(kP_sideDistance, 0, kP_sideDistance);
+    SidePIDController = new ProfiledPIDController(kP_side, 0, kD_side,sideConstraint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -95,6 +106,14 @@ public class FollowLimelight extends CommandBase {
 //    if (sideDistance>Math.PI){
 //      sideDistance = sideDistance - 2*Math.PI;
 //    }
+
+//CUTOFF 
+    if (Math.abs(sideDistance) <= sideDistanceCutOff){
+      sideDistance = 0;
+    }
+    if (Math.abs(forwardDistance) <= forwardDistanceCutOff){
+      forwardDistance = 0;
+    }
     
 
 
@@ -105,8 +124,8 @@ public class FollowLimelight extends CommandBase {
     yVel = Math.sin(m_SwerveDrive.heading) * forwardDistance + SidePIDController.calculate(sideDistance);// + Math.cos(sideDistance)*kP_sideDistance;// FIELD LEFT & RIGHT
 
     if (target[0] == 1) {
-      System.out.println("vx "+xVel+"  yvel "+yVel+"   rotation"+rotation);
-      m_SwerveDrive.setMotors(0, yVel, rotation);
+//      System.out.println("vx "+xVel+"  yvel "+yVel+"   rotation"+rotation);
+      m_SwerveDrive.setMotors(xVel, yVel, rotation);
     }
 
   }
@@ -120,9 +139,12 @@ public class FollowLimelight extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-//    if (Math.abs(target[1]) <= rotationCutOff){// && desiredForwardDistance - target[3] <= forwardDistanceCutOff) {
-//      return true;
- //   }
+/*    if (Math.abs(target[1]) <= rotationCutOff && desiredForwardDistance - target[3] <= forwardDistanceCutOff) {
+      counter += 1;
+    }
+    else{
+      counter = 0;
+    }*/
     return false;
   }
 }
