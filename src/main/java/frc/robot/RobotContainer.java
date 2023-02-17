@@ -80,7 +80,8 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand1() {
-    // An example command will be run in autonomous
+    // An example command will be run in autonomou
+    autoGenerator.updatePID();;
     return autoGenerator.autoCommand1();
   }
 
