@@ -10,6 +10,7 @@ import frc.robot.commands.FollowLimelight;
 import frc.robot.commands.ResetGyro;
 import frc.robot.commands.ReflectiveTape;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.Stick;
 import frc.robot.subsystems.Limelight;
 
@@ -31,6 +32,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
   public final Limelight m_Limelight = new Limelight();
+  public final IntakeSystem m_IntakeSystem = new IntakeSystem();
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
   public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
@@ -44,6 +46,8 @@ public class RobotContainer {
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
   public JoystickButton coneGrabberForward = driverJoystick.getButton(6); // R1
   public JoystickButton coneGrabberBackward = driverJoystick.getButton(5); //L1
+  public JoystickButton btnIntakeCube = driverJoystick.getButton(7);
+  public JoystickButton btnGrabCone = driverJoystick.getButton(8);
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -58,8 +62,14 @@ public class RobotContainer {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
+    new Trigger(btnUpdateConstants).onTrue(m_IntakeSystem.UpdateConstants());    
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
     new Trigger(btnAimAtTape).whileTrue(reflectivetape);
+    new Trigger(btnIntakeCube).onTrue(m_IntakeSystem.IntakeCube());
+    new Trigger(btnGrabCone).onTrue(m_IntakeSystem.GrabCone());
+    new Trigger(btnIntakeCube).onFalse(m_IntakeSystem.StopMotors());
+    new Trigger(btnGrabCone).onFalse(m_IntakeSystem.StopMotors());
+
 
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
