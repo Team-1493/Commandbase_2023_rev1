@@ -33,7 +33,7 @@ public class RobotContainer {
   public final Limelight m_Limelight = new Limelight();
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
-  public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
+  public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem, m_Limelight);
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
