@@ -198,9 +198,9 @@ public SwerveModule(String name, int driveID, int turnID, int cancoderID, double
         double acc = (speed-speedPrev)/0.020;
         speedPrev=speed;
 
-        m_drive.set(ControlMode.Velocity,  speed*MPSToNativeSpeed,
-            DemandType.ArbitraryFeedForward, feedforward_drive.calculate(speed,acc));
-    m_turn.set(ControlMode.Position,turnAngle*RadiansToNativePos);
+//        m_drive.set(ControlMode.Velocity,  speed*MPSToNativeSpeed,
+//            DemandType.ArbitraryFeedForward, feedforward_drive.calculate(speed,acc));
+//    m_turn.set(ControlMode.Position,turnAngle*RadiansToNativePos);
     }
 
 
