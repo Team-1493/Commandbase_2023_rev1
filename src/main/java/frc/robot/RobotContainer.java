@@ -11,6 +11,7 @@ import frc.robot.commands.ResetGyro;
 import frc.robot.commands.autobalancer;
 import frc.robot.commands.ReflectiveTape;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSystem;
 import frc.robot.subsystems.Stick;
 import frc.robot.subsystems.Limelight;
 
@@ -33,10 +34,15 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final SwerveDrive m_swervedriveSystem = new SwerveDrive();
   public final Limelight m_Limelight = new Limelight();
+  public final IntakeSystem m_IntakeSystem = new IntakeSystem();
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
+<<<<<<< HEAD
   public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
   public final autobalancer m_autobalancer = new autobalancer(m_swervedriveSystem);
+=======
+  public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem, m_Limelight);
+>>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
@@ -47,8 +53,13 @@ public class RobotContainer {
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
   public JoystickButton coneGrabberForward = driverJoystick.getButton(6); // R1
   public JoystickButton coneGrabberBackward = driverJoystick.getButton(5); //L1
+<<<<<<< HEAD
   public JoystickButton autobalance = driverJoystick.getButton(7);
 
+=======
+  public JoystickButton btnIntakeCube = driverJoystick.getButton(7);
+  public JoystickButton btnGrabCone = driverJoystick.getButton(8);
+>>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -63,9 +74,19 @@ public class RobotContainer {
 
     new Trigger(btnResetGyro).onTrue(new ResetGyro(m_swervedriveSystem));
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
+    new Trigger(btnUpdateConstants).onTrue(m_IntakeSystem.UpdateConstants());    
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
     new Trigger(btnAimAtTape).whileTrue(reflectivetape);
+<<<<<<< HEAD
     new Trigger(autobalance).whileTrue(new InstantCommand( () -> m_autobalancer.getandsetheading()));
+=======
+    new Trigger(btnIntakeCube).onTrue(m_IntakeSystem.IntakeCube());
+    new Trigger(btnGrabCone).onTrue(m_IntakeSystem.GrabCone());
+    new Trigger(btnIntakeCube).onFalse(m_IntakeSystem.StopMotors());
+    new Trigger(btnGrabCone).onFalse(m_IntakeSystem.StopMotors());
+
+
+>>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));
@@ -85,7 +106,8 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand1() {
-    // An example command will be run in autonomous
+    // An example command will be run in autonomou
+    autoGenerator.updatePID();;
     return autoGenerator.autoCommand1();
   }
 

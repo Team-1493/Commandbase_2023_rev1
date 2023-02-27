@@ -1,4 +1,11 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -14,6 +21,11 @@
       "open": false
     },
     "transitory": {
+      "Shuffleboard": {
+        ".recording": {
+          "open": true
+        }
+      },
       "SmartDashboard": {
         "Auto choices": {
           "open": true

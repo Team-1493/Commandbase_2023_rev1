@@ -55,13 +55,13 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     // Turn Module Offsets in degrees   FR-FL-BR-BL
     double[] turnMotorZeroPos={4.13, 105.9, 29.9, 56.9};
 
-    modules[0]=new SwerveModule("FR",1,2,11,
+    modules[0]=new SwerveModule("FR",2,1,11,
         turnMotorZeroPos[0]);
-    modules[1]=new SwerveModule("FL",3,4,13,
+    modules[1]=new SwerveModule("FL",4,3,13,
         turnMotorZeroPos[1]);
-    modules[2]=new SwerveModule("BR",5,6,15,
+    modules[2]=new SwerveModule("BR",6,5,15,
         turnMotorZeroPos[2]);
-    modules[3]=new SwerveModule("BL",7,8,17,
+    modules[3]=new SwerveModule("BL",8,7,17,
         turnMotorZeroPos[3]);
 
     modulePos=getModulePositions();    
