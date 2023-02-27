@@ -73,6 +73,15 @@ public class IntakeSystem extends SubsystemBase {
     });
   }
 
+  public CommandBase DropCone() {
+    return runOnce(() -> {
+      FrontIntakeBar.set(ControlMode.PercentOutput, -frontIntakePower);
+      RearIntakeBars.set(ControlMode.PercentOutput, rearIntakePower);
+    });
+  }
+
+  
+
   public CommandBase StopMotors(){
     return runOnce(() -> {TopConveyor.set(ControlMode.Velocity, 0);
     BotConveyor.set(ControlMode.Velocity, 0);
