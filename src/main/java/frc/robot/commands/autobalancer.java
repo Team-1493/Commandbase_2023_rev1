@@ -23,9 +23,11 @@ public class autobalancer {
         double heading = desiredHeading * (180/Math.PI);
         
         sds.setMotors(0, 0, new Rotation2d(heading));
+        heading=0;
         if(heading == 0){
             //use pitch
             Double pitch = Pigeon.Instance.getPitch();
+            System.out.println("pitch = "+pitch);
             SmartDashboard.putNumber("using pitch", pitch);
             if (pitch > MaxPitchValue){
                 Double xpos = sds.getPose().getX();
@@ -37,12 +39,16 @@ public class autobalancer {
                 }
             }
             if (pitch < -MaxPitchValue){
-                Double xpos = sds.getPose().getX(); 
+                Double xpos = sds.xposMeters; 
                 Double Desiredxpos = xpos;
-                while (xpos<Desiredxpos-1){
+                System.out.println("Init xpos="+xpos);
+                while (pitch < -MaxPitchValue){
+                    pitch = Pigeon.Instance.getPitch();
+                    System.out.println("pitch"+pitch);
+                    xpos = sds.xposMeters; 
+                    System.out.println("xpos="+xpos);
                  sds.setMotors(0.5, 0, 0);
-                 Desiredxpos = sds.getPose().getX();
-                 SmartDashboard.putNumber("Auto-Desiredypos_0_neg_pitch", Desiredxpos);
+                 Desiredxpos = sds.xposMeters;
                 }
             }
         } 
