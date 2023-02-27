@@ -8,6 +8,7 @@ import frc.robot.subsystems.AutoGenerator;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.FollowLimelight;
 import frc.robot.commands.ResetGyro;
+import frc.robot.commands.autobalancer;
 import frc.robot.commands.ReflectiveTape;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Stick;
@@ -16,6 +17,7 @@ import frc.robot.subsystems.Limelight;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveDrive;
@@ -34,6 +36,7 @@ public class RobotContainer {
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
   public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
+  public final autobalancer m_autobalancer = new autobalancer(m_swervedriveSystem);
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
@@ -44,6 +47,8 @@ public class RobotContainer {
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
   public JoystickButton coneGrabberForward = driverJoystick.getButton(6); // R1
   public JoystickButton coneGrabberBackward = driverJoystick.getButton(5); //L1
+  public JoystickButton autobalance = driverJoystick.getButton(7);
+
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -60,7 +65,7 @@ public class RobotContainer {
     new Trigger(btnUpdateConstants).onTrue(m_swervedriveSystem.UpdateConstantsCommand());    
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
     new Trigger(btnAimAtTape).whileTrue(reflectivetape);
-
+    new Trigger(autobalance).whileTrue(new InstantCommand( () -> m_autobalancer.getandsetheading()));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));

@@ -5,9 +5,12 @@ import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Pigeon {
+
+    public static Pigeon Instance;
      Pigeon2 pigeon;
 
     public Pigeon(int ID){
+        Instance = this;
         pigeon = new Pigeon2(20);
         pigeon.configFactoryDefault();      
         pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 251);
@@ -28,14 +31,12 @@ public class Pigeon {
         return angle;
     } 
     public double getRoll(){
-        double[] roll = new double[2];
-        pigeon.getYawPitchRoll(roll);
-        return roll[2];
+       double roll = pigeon.getRoll();
+        return roll;
+  
     }
     public double getPitch(){
-        double[] pitch = new double[2];
-        pigeon.getYawPitchRoll(pitch);
-        return pitch[2];
+        return pigeon.getPitch();
     }
     public double getHeadingRadians(){
         return getHeadingDegrees()*Math.PI/180.;
