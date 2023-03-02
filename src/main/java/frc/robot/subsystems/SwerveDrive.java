@@ -45,6 +45,7 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   private double[] encPositionRad = new double[4];   // encoder position of swerve motors
   private String[] moduleNames={"FR","FL","BR","BL"};
   double headingSet=0;
+  public double xpos,xposMeters;
   boolean rotatePIDon=false;
  
 
@@ -55,13 +56,13 @@ public static SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
     // Turn Module Offsets in degrees   FR-FL-BR-BL
     double[] turnMotorZeroPos={4.13, 105.9, 29.9, 56.9};
 
-    modules[0]=new SwerveModule("FR",2,1,11,
+    modules[0]=new SwerveModule("FR",1,2,11,
         turnMotorZeroPos[0]);
-    modules[1]=new SwerveModule("FL",4,3,13,
+    modules[1]=new SwerveModule("FL",3,4,13,
         turnMotorZeroPos[1]);
-    modules[2]=new SwerveModule("BR",6,5,15,
+    modules[2]=new SwerveModule("BR",5,6,15,
         turnMotorZeroPos[2]);
-    modules[3]=new SwerveModule("BL",8,7,17,
+    modules[3]=new SwerveModule("BL",7,8,17,
         turnMotorZeroPos[3]);
 
     modulePos=getModulePositions();    
@@ -248,8 +249,10 @@ public void resetOdometryToZero(){
     try{
     m_odometry.update(
         new Rotation2d(heading),modulePos);
+        xpos=m_odometry.getPoseMeters().getY()*39.37;
+        xposMeters=m_odometry.getPoseMeters().getY();
         SmartDashboard.putNumber("pose-rot", m_odometry.getPoseMeters().getRotation().getDegrees());
-        SmartDashboard.putNumber("pose-x", m_odometry.getPoseMeters().getX()*39.37);
+        SmartDashboard.putNumber("pose-x", xpos);
         SmartDashboard.putNumber("pose-y", m_odometry.getPoseMeters().getY()*39.37);
         printModuleStates();
 //        SmartDashboard.putNumber("module state 0 mps", modules[0].getState().speedMetersPerSecond);

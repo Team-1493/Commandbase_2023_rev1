@@ -37,12 +37,8 @@ public class RobotContainer {
   public final IntakeSystem m_IntakeSystem = new IntakeSystem();
   public final AutoGenerator autoGenerator = new AutoGenerator(m_swervedriveSystem);
   public final Stick driverJoystick =new Stick();
-<<<<<<< HEAD
-  public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem);
   public final autobalancer m_autobalancer = new autobalancer(m_swervedriveSystem);
-=======
   public final ReflectiveTape reflectivetape = new ReflectiveTape(m_swervedriveSystem, m_Limelight);
->>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
   Supplier<double[]> stickState = () -> driverJoystick.readDriverStick();
 
   public final DriveStick driveCommand = new DriveStick(m_swervedriveSystem,stickState); 
@@ -53,13 +49,8 @@ public class RobotContainer {
   public JoystickButton btnFollowLimelight = driverJoystick.getButton(4);
   public JoystickButton coneGrabberForward = driverJoystick.getButton(6); // R1
   public JoystickButton coneGrabberBackward = driverJoystick.getButton(5); //L1
-<<<<<<< HEAD
   public JoystickButton autobalance = driverJoystick.getButton(7);
 
-=======
-  public JoystickButton btnIntakeCube = driverJoystick.getButton(7);
-  public JoystickButton btnGrabCone = driverJoystick.getButton(8);
->>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -77,16 +68,13 @@ public class RobotContainer {
     new Trigger(btnUpdateConstants).onTrue(m_IntakeSystem.UpdateConstants());    
     new Trigger(btnFollowLimelight).whileTrue(new FollowLimelight(m_swervedriveSystem, m_Limelight));
     new Trigger(btnAimAtTape).whileTrue(reflectivetape);
-<<<<<<< HEAD
     new Trigger(autobalance).whileTrue(new InstantCommand( () -> m_autobalancer.getandsetheading()));
-=======
-    new Trigger(btnIntakeCube).onTrue(m_IntakeSystem.IntakeCube());
-    new Trigger(btnGrabCone).onTrue(m_IntakeSystem.GrabCone());
-    new Trigger(btnIntakeCube).onFalse(m_IntakeSystem.StopMotors());
-    new Trigger(btnGrabCone).onFalse(m_IntakeSystem.StopMotors());
+    // new Trigger(btnIntakeCube).onTrue(m_IntakeSystem.IntakeCube());
+    // new Trigger(btnGrabCone).onTrue(m_IntakeSystem.GrabCone());
+    // new Trigger(btnIntakeCube).onFalse(m_IntakeSystem.StopMotors());
+    // new Trigger(btnGrabCone).onFalse(m_IntakeSystem.StopMotors());
 
 
->>>>>>> 78619456452df5316ec1ce8f8942597f83bfb142
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov0).onTrue(m_swervedriveSystem.rotateInPlace(0.));
     new Trigger(driverJoystick.pov90).onTrue(m_swervedriveSystem.rotateInPlace(90));

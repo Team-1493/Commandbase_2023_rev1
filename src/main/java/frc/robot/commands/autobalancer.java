@@ -24,7 +24,7 @@ public class autobalancer {
         
         sds.setMotors(0, 0, new Rotation2d(heading));
         heading=0;
-        if(heading == 0){
+        if(heading<10 && heading>350){
             //use pitch
             Double pitch = Pigeon.Instance.getPitch();
             System.out.println("pitch = "+pitch);
@@ -32,94 +32,99 @@ public class autobalancer {
             if (pitch > MaxPitchValue){
                 Double xpos = sds.getPose().getX();
                 Double Desiredxpos = xpos;
-                while (xpos<Desiredxpos+1){
-                 sds.setMotors(-0.5, 0, 0);
-                 Desiredxpos = sds.getPose().getX();
-                 SmartDashboard.putNumber("Auto-Desiredypos_0_pos_pitch", Desiredxpos);
+                while (pitch > MaxPitchValue){
+                    pitch = Pigeon.Instance.getPitch();
+                    System.out.println("pitch"+pitch);
+                    sds.setMotors(-0.5, 0, 0);
+                    xpos = sds.xposMeters;  
+
                 }
             }
             if (pitch < -MaxPitchValue){
                 Double xpos = sds.xposMeters; 
-                Double Desiredxpos = xpos;
                 System.out.println("Init xpos="+xpos);
                 while (pitch < -MaxPitchValue){
                     pitch = Pigeon.Instance.getPitch();
                     System.out.println("pitch"+pitch);
-                    xpos = sds.xposMeters; 
+                    xpos = sds.xposMeters;  
                     System.out.println("xpos="+xpos);
-                 sds.setMotors(0.5, 0, 0);
-                 Desiredxpos = sds.xposMeters;
+                    sds.setMotors(0.5, 0, 0);
+                    Double Desiredxpos = sds.xposMeters;
+                    System.out.println("desired xpos = " +Desiredxpos);
+                
                 }
             }
         } 
-        if(heading == 180){
+        if(heading>170 && heading<190){
             //use pitch
             Double pitch = Pigeon.Instance.getPitch();
             SmartDashboard.putNumber("using pitch", pitch);
             if (pitch > MaxPitchValue){
-                Double xpos = sds.getPose().getX();
-                Double Desiredxpos = xpos;
-                while (xpos<Desiredxpos-1){
+                Double xpos = sds.xposMeters; 
+                while (pitch > MaxPitchValue){
+                    pitch = Pigeon.Instance.getPitch();
+                    System.out.println("pitch"+pitch);
                     sds.setMotors(-0.5, 0, 0);
-                    Desiredxpos = sds.getPose().getX();
-                    SmartDashboard.putNumber("Auto-Desiredypos_180_pos_pitch", Desiredxpos);
+                    xpos = sds.xposMeters; 
+                    System.out.println("xpos = "+xpos);
 
                 }
             }
                 if (pitch < -MaxPitchValue){
                     Double xpos = sds.getPose().getX();
-                    Double Desiredxpos = xpos;
-                    while (xpos>Desiredxpos+1){
-                     sds.setMotors(0.5, 0, 0);
-                     Desiredxpos = sds.getPose().getX();
-                     SmartDashboard.putNumber("Auto-Desiredypos_180_neg_pitch", Desiredxpos);
+                    while (pitch < -MaxPitchValue){
+                        pitch = Pigeon.Instance.getPitch();
+                        sds.setMotors(0.5, 0, 0);
+                        xpos = sds.xposMeters; 
+                        System.out.println("xpos = "+xpos);
                     }
                 }
         }
-        if(heading == 90 ){
+        if(heading>80 && heading<100){
             //use roll
             Double Roll = Pigeon.Instance.getRoll();
             SmartDashboard.putNumber("using pitch", Roll);
 
             if (Roll > MaxRollValue){
-                Double ypos = sds.getPose().getY();
-                Double Desiredypos = ypos;
-                while (ypos<Desiredypos-1){
+                Double ypos = sds.yposMeters; 
+                while (Roll > MaxRollValue){
+                    Roll = Pigeon.Instance.getRoll();
+                    System.out.println("Roll"+Roll);
                     sds.setMotors(0, -0.5, 0);
-                    Desiredypos = sds.getPose().getY();
-                    SmartDashboard.putNumber("Auto-Desiredypos_90_pos_roll", Desiredypos);
+                    ypos = sds.yposMeters; 
+                    System.out.println("ypos = "+ypos);
                 }
             }
             if (Roll < -MaxRollValue){
-                Double ypos = sds.getPose().getY();
-                Double Desiredypos = ypos;
-                while (ypos>Desiredypos+1){
+                Double ypos = sds.yposMeters; 
+                while (Roll < -MaxRollValue){
+                    Roll = Pigeon.Instance.getRoll();
                     sds.setMotors(0, 0.5, 0);
-                    Desiredypos = sds.getPose().getY();
-                    SmartDashboard.putNumber("Auto-Desiredypos_90_neg_roll", Desiredypos);
+                    ypos = sds.yposMeters; 
+                    System.out.println("ypos = "+ypos);
                 }
             }
         }
         
     
-        
-        if(heading == 270){
+        //not updated yet/
+        if(heading>260 && heading<280){
             //use roll
             Double Roll = Pigeon.Instance.getRoll();
             SmartDashboard.putNumber("using pitch", Roll);
             if (Roll > MaxRollValue){
-                Double ypos = sds.getPose().getY();
+                Double ypos = sds.yposMeters; 
                 Double Desiredypos = ypos;
                 while (ypos<Desiredypos-1){
                     sds.setMotors(0, -0.5, 0);
-                    Desiredypos = sds.getPose().getY();
+                    Desiredypos = sds.yposMeters;
                     SmartDashboard.putNumber("Auto-Desiredypos_270_pos_roll", Desiredypos);
                 }
                 if (Roll < -MaxRollValue){
-                    Desiredypos = sds.getPose().getY();
-                    while (ypos>Desiredypos+1){
+                    Desiredypos = sds.yposMeters; 
+                    while (Roll < -MaxRollValue){
                         sds.setMotors(0, 0.5, 0);
-                        Desiredypos = sds.getPose().getY();
+                        Desiredypos = sds.yposMeters;
                         SmartDashboard.putNumber("Auto-Desiredypos_270_neg_roll", Desiredypos);
                     }
                 }
